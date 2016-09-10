@@ -82,19 +82,20 @@ $(document).ready(function() {
                 // console.log(contents);
                 var $row = $table.find('tbody tr#' + CSS.escape(k));
                 $row.data(model);
-                $.each(contents, function() {
-                    var icon = "";
+                $.each(contents, function(index) {
+                    var icon = '<a target="_blank" href="https://reserve-hk.apple.com/HK/zh_HK/reserve/iPhone?channel=1&iPP=false&store=' + headers[index] + '&partNumber=' + k + '">';
                     var status = this.trim().toLowerCase();
                     switch (status) {
                         case 'none':
-                            icon = '<i class="fa fa-times text-danger"></i>';
+                            icon += '<i class="fa fa-times text-danger"></i>';
                             break;
                         case 'all':
-                            icon = '<i class="fa fa-check text-success"></i>';
+                            icon += '<i class="fa fa-check text-success"></i>';
                             break;
                         default:
-                            icon = '<span class="text-warning">' + status + '</span>';
+                            icon += '<span class="text-warning">' + status + '</span>';
                     }
+                    icon += '</a>';
                     $row.append('<td>' + icon + '</td>');
                 });
             })
