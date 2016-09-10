@@ -31,7 +31,7 @@
             <div class="filter-panel" id="filter-panel">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <form class="form-inline" role="form" onchange="filter()">
+                        <form class="form-inline" onchange="filter()" role="form">
                             <!-- form group [search] -->
                             <div class="form-group col-sm-4">
                                 <label class="filter-col" for="pref-orderby" style="margin-right:0;">
@@ -50,18 +50,18 @@
                                         Black
                                     </option>
                                     <option>
-                                        Jetblack
+                                        Jet Black
                                     </option>
                                     <option>
-                                        Rosegold
+                                        Rose Gold
                                     </option>
                                 </select>
                             </div>
                             <div class="form-group col-sm-4">
                                 <label class="filter-col" for="pref-orderby" style="margin-right:0;">
-                                    Storage:
+                                    Storage Capacity:
                                 </label>
-                                <select class="form-control" id="storage">
+                                <select class="form-control" id="capacity">
                                     <option>
                                     </option>
                                     <option id="32gb">
@@ -77,15 +77,15 @@
                             </div>
                             <div class="form-group col-sm-4">
                                 <label class="filter-col" for="pref-orderby" style="margin-right:0;">
-                                    Size:
+                                    Screen Size:
                                 </label>
-                                <select class="form-control" id="size">
+                                <select class="form-control" id="sub">
                                     <option>
                                     </option>
-                                    <option>
+                                    <option value="10143">
                                         iPhone 7
                                     </option>
-                                    <option>
+                                    <option value="10142">
                                         iPhone 7 Plus
                                     </option>
                                 </select>
@@ -99,12 +99,15 @@
             <thead>
                 <tr>
                     <th>
+                    Model
                     </th>
                 </tr>
             </thead>
             <tbody>
             </tbody>
             <tfoot>
+                <tr id="time-slot">
+                </tr>
             </tfoot>
         </table>
     </section>

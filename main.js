@@ -1,4 +1,13 @@
+$.getJSON("models.json", {}, function(data) {
+    var models = {};
+    $.each(data, function() {
+        models[this['part_number']] = this;
+    });
+    window.models = models;
+    // console.log(models);
+});
 $(document).ready(function() {
+    // load model data
     $.getJSON("api/index.php", {
         do: 'stores'
     }, function(data) {
@@ -28,7 +37,7 @@ $(document).ready(function() {
                     // this is a store
                     store = store_list[k];
                     if (!store.storeEnabled) console.warn("Store", store.storeNumber, store, storeName, "not enabled!");
-                    console.log(store.storeName, v);
+                    // console.log(store.storeName, v);
                     $.each(v, function(kk, vv) {
                         if (model_obj[kk] === undefined) {
                             model_obj[kk] = {};
@@ -41,16 +50,28 @@ $(document).ready(function() {
             });
             var timeSlot;
             $table.find('tbody tr').remove();
+            $table.find('tfoot tr#time-slot td').remove();
             $.each(model_obj, function(k, v) {
                 // console.log(k, v);
                 if (k.length !== 9) return timeSlot = v;
-                $table.find('tbody').append('<tr id="' + k + '"><td class="model">' + k + '</td></tr>');
+                var name = k;
+                var model;
+                if (window.models) {
+                    try {
+                        model = window.models[name];
+                        name = window.models[name]['productDescription'];
+                    } catch (err) {
+                        console.info(name, err);
+                    }
+                }
+                $table.find('tbody').append('<tr id="' + k + '"><td class="model">' + name + '</td></tr>');
                 var contents = [];
                 $.each(headers, function(kk, vv) {
                     contents[kk] = v[vv];
                 });
                 // console.log(contents);
                 var $row = $table.find('tbody tr#' + CSS.escape(k));
+                $row.data(model);
                 $.each(contents, function() {
                     var icon = "";
                     var status = this.trim().toLowerCase();
@@ -67,7 +88,7 @@ $(document).ready(function() {
                     $row.append('<td>' + icon + '</td>');
                 });
             })
-            var $timeSlotRow = $table.find('tbody').append('<tr id="time-slot"><td>Available Time</td></tr>').find('tr#time-slot');
+            var $timeSlotRow = $table.find('tfoot tr#time-slot').append('<td>Available Time</td>');
             var timeSlotSorted = [];
             $.each(headers, function(k, v) {
                 timeSlotSorted[k] = timeSlot[v];
@@ -76,18 +97,33 @@ $(document).ready(function() {
                 var time = v ? (v['en_HK'] ? v['en_HK']['timeslotTime'] : 'N/A') : 'N/A';
                 $timeSlotRow.append('<td>' + time + '</td>');
             });
+            // filter
+            if (!initial) filter();
         });
     }
 });
 
 function filter() {
-    var color = $('#color').val().toLowerCase();
-    var storage = $('#storage').val().toLowerCase();
-    var size = $('#size').val().toLowerCase();
-    console.log(color, storage, size);
-    $('#32gb').toggleClass('hidden', color == "jetblack");
-    if (color == "jetblack" && storage == "32gb") {
-        $('#storage').prop('selectedIndex', 0);
+    var color = $('#color').val().trim().toLowerCase();
+    var capacity = $('#capacity').val().trim().toLowerCase();
+    var sub = $('#sub').val();
+    // console.log(color, capacity, sub);
+    $('#32gb').toggleClass('hidden', color == "jet black");
+    if (color == "jet black" && capacity == "32gb") {
+        $('#capacity').prop('selectedIndex', 0);
         return filter();
     }
+    // do filtering
+    $('table.availability tbody tr').each(function() {
+        var this_data = $(this).data(),
+            this_color = this_data['color'].toLowerCase();
+        this_capacity = this_data['capacity'].toLowerCase();
+        this_sub = this_data['subfamily_id'];
+        // filter color
+        if ((color && color != this_color) || (capacity && capacity != this_capacity) || (sub && sub != this_sub)) {
+            $(this).addClass('hidden');
+        } else {
+            $(this).removeClass('hidden');
+        }
+    });
 }

@@ -3,8 +3,9 @@
     font-family: Arial, Helvetica, sans-serif;
     font-size: 24pt;
 }
+
 .form-inline .form-control {
-	width: 100%;
+    width: 100%;
 }
 
 .panel {
@@ -15,6 +16,14 @@ body {
     background-color: #eee;
     margin: 2em;
     color: #333;
+}
+
+table {
+    font-size: 10pt;
+}
+
+table tbody {
+    white-space: nowrap;
 }
 
 
