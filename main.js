@@ -6,6 +6,7 @@ $.getJSON("models.json", {}, function(data) {
     window.models = models;
     // console.log(models);
 });
+var filter;
 $(document).ready(function() {
     // load model data
     $.getJSON("api/index.php", {
@@ -19,13 +20,22 @@ $(document).ready(function() {
         });
         window.store_list = store_list;
         loadData(true);
-        setInterval(loadData, 5000);
     });
 
     function loadData(initial) {
         $.getJSON("api/index.php", {
             do: 'availability'
         }, function(data) {
+            // update last-update
+            if (window.last_update == data['updated']) {
+                return;
+            } else {
+                window.last_update = data['updated'];
+                if (window.fast_refresh) {
+                    clearInterval(window.fast_refresh);
+                    window.fast_refresh = false;
+                }
+            }
             // console.log(data);
             var $table = $('table.availability');
             var store_list = window.store_list;
@@ -99,31 +109,63 @@ $(document).ready(function() {
             });
             // filter
             if (!initial) filter();
+            if (initial) updateTime(true);
+        });
+    }
+
+    function updateTime(initial) {
+        var sec_elapsed = Math.round((new Date() - new Date(window.last_update)) / 1000);
+        var sec_to_target = (350 - sec_elapsed) > 0 ? (350 - sec_elapsed) : 0; // 10s if passed target
+        if (initial) {
+            $("#last-update").parents('.panel').removeClass('hidden');
+        }
+        if (!window.fast_refresh) {
+            window.fast_refresh = true;
+            setTimeout(function() {
+                window.fast_refresh = setInterval(loadData, 5000);
+            }, sec_to_target * 1000);
+        }
+        var hours = Math.floor(sec_elapsed / 3600);
+        var minutes = Math.floor((sec_elapsed - (hours * 3600)) / 60);
+        var seconds = sec_elapsed - (hours * 3600) - (minutes * 60);
+        if (hours > 0) {
+            hours += " hours ";
+        } else {
+            hours = "";
+        }
+        if (minutes > 0 || hours.length > 0) {
+            minutes += " minutes ";
+        } else {
+            minutes = "";
+        }
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        }
+        $("#last-update").text(hours + minutes + seconds + " seconds");
+        return setTimeout(updateTime, 100);
+    }
+    filter = function filter() {
+        var color = $('#color').val().trim().toLowerCase();
+        var capacity = $('#capacity').val().trim().toLowerCase();
+        var sub = $('#sub').val();
+        // console.log(color, capacity, sub);
+        $('#32gb').toggleClass('hidden', color == "jet black");
+        if (color == "jet black" && capacity == "32gb") {
+            $('#capacity').prop('selectedIndex', 0);
+            return filter();
+        }
+        // do filtering
+        $('table.availability tbody tr').each(function() {
+            var this_data = $(this).data(),
+                this_color = this_data['color'].toLowerCase();
+            this_capacity = this_data['capacity'].toLowerCase();
+            this_sub = this_data['subfamily_id'];
+            // filter color
+            if ((color && color != this_color) || (capacity && capacity != this_capacity) || (sub && sub != this_sub)) {
+                $(this).addClass('hidden');
+            } else {
+                $(this).removeClass('hidden');
+            }
         });
     }
 });
-
-function filter() {
-    var color = $('#color').val().trim().toLowerCase();
-    var capacity = $('#capacity').val().trim().toLowerCase();
-    var sub = $('#sub').val();
-    // console.log(color, capacity, sub);
-    $('#32gb').toggleClass('hidden', color == "jet black");
-    if (color == "jet black" && capacity == "32gb") {
-        $('#capacity').prop('selectedIndex', 0);
-        return filter();
-    }
-    // do filtering
-    $('table.availability tbody tr').each(function() {
-        var this_data = $(this).data(),
-            this_color = this_data['color'].toLowerCase();
-        this_capacity = this_data['capacity'].toLowerCase();
-        this_sub = this_data['subfamily_id'];
-        // filter color
-        if ((color && color != this_color) || (capacity && capacity != this_capacity) || (sub && sub != this_sub)) {
-            $(this).addClass('hidden');
-        } else {
-            $(this).removeClass('hidden');
-        }
-    });
-}
