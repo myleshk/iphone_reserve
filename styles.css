@@ -34,6 +34,14 @@ table tbody {
     white-space: nowrap;
 }
 
+table tbody td{
+    text-align: center;
+}
+
+table tbody td.model {
+    text-align: left;
+}
+
 
 /*
   * See https://github.com/angular/angular.io/blob/master/public/docs/_examples/styles.css
