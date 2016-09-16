@@ -46,7 +46,7 @@ $(document).ready(function() {
                 if (k in store_list) {
                     // this is a store
                     store = store_list[k];
-                    if (!store.storeEnabled) console.warn("Store", store.storeNumber, store, storeName, "not enabled!");
+                    if (!store.storeEnabled) console.warn("Store", store.storeNumber, store, store.storeName, "not enabled!");
                     // console.log(store.storeName, v);
                     $.each(v, function(kk, vv) {
                         if (model_obj[kk] === undefined) {
