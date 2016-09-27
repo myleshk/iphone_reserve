@@ -34,6 +34,14 @@ table tbody {
     white-space: nowrap;
 }
 
+table tbody tr{
+    display: none;
+}
+
+table tbody tr.available {
+    display: table-row;
+}
+
 table tbody td{
     text-align: center;
 }

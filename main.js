@@ -91,6 +91,7 @@ $(document).ready(function() {
                             break;
                         case 'all':
                             icon += '<i class="fa fa-check text-success"></i>';
+                            $row.addClass('available');
                             break;
                         default:
                             icon += '<span class="text-warning">' + status + '</span>';
