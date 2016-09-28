@@ -83,7 +83,7 @@ $(document).ready(function() {
                 var $row = $table.find('tbody tr#' + CSS.escape(k));
                 $row.data(model);
                 $.each(contents, function(index) {
-                    var icon = '<a target="_blank" href="https://reserve-hk.apple.com/HK/zh_HK/reserve/iPhone?channel=1&iPP=false&store=' + headers[index] + '&partNumber=' + k + '">';
+                    var icon = '<a target="_blank" href="https://reserve-hk.apple.com/HK/zh_HK/reserve/iPhone/availability?channel=1&iPP=false&store=' + headers[index] + '&partNumber=' + k + '">';
                     var status = this.trim().toLowerCase();
                     switch (status) {
                         case 'none':
