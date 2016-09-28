@@ -8,8 +8,8 @@ $.getJSON("models.json", {}, function(data) {
 });
 var filter;
 $(document).ready(function() {
-    var expected_interval = 129,
-        fast_refresh_interval = 2;
+    var expected_interval = 120,
+        fast_refresh_interval = 1;
     // load model data
     $.getJSON("api/index.php", {
         do: 'stores'
