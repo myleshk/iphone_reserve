@@ -8,6 +8,8 @@ $.getJSON("models.json", {}, function(data) {
 });
 var filter;
 $(document).ready(function() {
+    var expected_interval = 129,
+        fast_refresh_interval = 2;
     // load model data
     $.getJSON("api/index.php", {
         do: 'stores'
@@ -117,14 +119,14 @@ $(document).ready(function() {
 
     function updateTime(initial) {
         var sec_elapsed = Math.round((new Date() - new Date(window.last_update)) / 1000);
-        var sec_to_target = (350 - sec_elapsed) > 0 ? (350 - sec_elapsed) : 0; // 10s if passed target
+        var sec_to_target = (expected_interval - sec_elapsed) > 0 ? (expected_interval - sec_elapsed) : 0; // 0s if passed target
         if (initial) {
             $("#last-update").parents('.panel').removeClass('hidden');
         }
         if (!window.fast_refresh) {
             window.fast_refresh = true;
             setTimeout(function() {
-                window.fast_refresh = setInterval(loadData, 5000);
+                window.fast_refresh = setInterval(loadData, fast_refresh_interval * 1000);
             }, sec_to_target * 1000);
         }
         var hours = Math.floor(sec_elapsed / 3600);
