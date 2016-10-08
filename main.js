@@ -10,6 +10,8 @@ var filter;
 $(document).ready(function() {
     var expected_interval = 120,
         fast_refresh_interval = 1;
+    // open Notification permission
+    notify();
     // load model data
     $.getJSON("api/index.php", {
         do: 'stores'
@@ -146,6 +148,7 @@ $(document).ready(function() {
             seconds = "0" + seconds;
         }
         $("#last-update").text(hours + minutes + seconds + " seconds");
+        checkAlarm();
         return setTimeout(updateTime, 100);
     }
     filter = function filter() {
@@ -171,5 +174,64 @@ $(document).ready(function() {
                 $(this).removeClass('hidden');
             }
         });
+    }
+
+    function checkAvailable() {
+        var available = $('.fa-check:visible');
+        if (available.length > 0) {
+            var link = available.parents('a').last()[0].href;
+            setTimeout(function() {
+                notify("iPhone Available", {
+                    body: "The model you want is available!",
+                    link: link
+                })
+            }, 0);
+            return true;
+        }
+    }
+
+    function checkAlarm() {
+        if (document.getElementById("alarm").checked) {
+            if (!window.last_checked) console.info("Alarm On");
+            window.last_checked = true;
+            if (checkAvailable()) {
+                return document.getElementById("alarm").checked = false;
+            }
+        } else {
+            if (window.last_checked) console.info("Alarm Off");
+            window.last_checked = false;
+        }
+    }
+
+    function notify(title, options) {
+        // Let's check if the browser supports notifications
+        if (!("Notification" in window)) {
+            if (title) alert(title);
+        }
+        // Let's check whether notification permissions have already been granted
+        else if (Notification.permission === "granted") {
+            // If it's okay let's create a notification
+            if (title) var notification = new Notification(title, options);
+        }
+        // Otherwise, we need to ask the user for permission
+        else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function(permission) {
+                // If the user accepts, let's create a notification
+                if (permission === "granted") {
+                    if (title) var notification = new Notification(title, options);
+                }
+            });
+        }
+        if (options && options['link']) {
+            var link = options['link'];
+            if (notification) {
+                notification.onclick = function() {
+                    window.open(link);
+                };
+            } else window.open(link);
+        }
+        notification = null;
+        // At last, if the user has denied notifications, and you 
+        // want to be respectful there is no need to bother them any more.
     }
 });
